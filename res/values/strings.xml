@@ -6,6 +6,14 @@
     <string name="hello_world">Hello world!</string>
     <string name="button_tweet">Tweet</string>
     <string name="hint_status">What\'s going on?</string>
+    <string name="password">Password</string>
+    <string name="password_summary">How do you log in?</string>
+    <string name="purge">Delete selection</string>
+    <string name="refresh">Refresh list</string>
     <string name="text_count">140</string>
+    <string name="tweet">Post your new status</string>
+    <string name="username">User name</string>
+    <string name="username_summary">What\'s your username?</string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>

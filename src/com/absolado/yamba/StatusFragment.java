@@ -5,9 +5,13 @@ import com.absolado.yamba.clientlib.YambaClientException;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.app.Fragment;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +25,7 @@ import android.widget.Toast;
 
 public class StatusFragment extends Fragment implements OnClickListener{
 
-	private static final String TAG = "StatusActivity";
+	private static final String TAG = "StatusFragment";
 	private static final int MAX_COUNT = 140;
 	private EditText editStatus;
 	private Button buttonTweet;
@@ -74,16 +78,33 @@ public class StatusFragment extends Fragment implements OnClickListener{
 					AsyncTask<String, Void, String> {
 		@Override
 		protected String doInBackground(String... params) {
-			 YambaClient yambaCloud =
-					 new YambaClient("student", "password");
+			SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences(getActivity());
+			String username = prefs.getString("username", "");
+			String password = prefs.getString("password", "");
+			
+			if (TextUtils.isEmpty(username) ||
+				TextUtils.isEmpty(password)) {
+				getActivity().startActivity(
+						new Intent(getActivity(), SettingsActivity.class));
+				return "Please update your username and password";
+			}
+			
+			Log.d(TAG, username);
+			Log.d(TAG, password);
+			
+//			YambaClient yambaCloud =
+//				 new YambaClient("student", "password");
+			YambaClient yambaCloud =
+					 new YambaClient(username, password);
 			 
-			 try {
-				 yambaCloud.postStatus(params[0]);
-				 return "Successfully posted";
-			 } catch (YambaClientException e) {
-				 e.printStackTrace();
-				 return "Failed to post to yamba service";
-			 }
+			try {
+				yambaCloud.postStatus(params[0]);
+				return "Successfully posted";
+			} catch (YambaClientException e) {
+				e.printStackTrace();
+				return "Failed to post to yamba service";
+			}
 		}
 		
 		@Override

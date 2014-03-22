@@ -55,7 +55,6 @@ public class RefreshService extends IntentService {
 		YambaClient client = new YambaClient(username, password);
 		try {
 			List<Status> timeline = client.getTimeline(20);
-			Log.d(TAG, "start refresh the status");
 			for (Status status : timeline) {
 				Log.d(TAG, String.format("%s.[%s]: %s - by %s",  
 						status.getCreatedAt(), 

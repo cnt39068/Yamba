@@ -15,14 +15,17 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        
         <activity
             android:name="com.absolado.yamba.StatusActivity"
             android:label="@string/app_name" >
         </activity>
+        
         <activity
             android:name="com.absolado.yamba.SettingsActivity"
             android:label="@string/action_settings">
          </activity>
+         
         <activity
             android:name="com.absolado.yamba.MainActivity"
             android:label="@string/app_name" >
@@ -31,7 +34,14 @@
                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
         <service android:name=".RefreshService" />
+        
+        <provider 
+            android:name="com.absolado.yamba.StatusProvider"
+            android:authorities="com.absolado.yamba.StatusProvider"
+            android:exported="false" />
+        
     </application>
 
 </manifest>

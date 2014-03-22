@@ -1,14 +1,19 @@
 package com.absolado.yamba;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.absolado.yamba.clientlib.YambaClient;
 import com.absolado.yamba.clientlib.YambaClient.Status;
 import com.absolado.yamba.clientlib.YambaClientException;
 
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+//import android.content.UriMatcher;
+//import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -52,16 +57,39 @@ public class RefreshService extends IntentService {
 			return;
 		}
 		
+//		DbHelper dbHelper = new DbHelper(this);
+//		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		
 		YambaClient client = new YambaClient(username, password);
 		try {
+			int count = 0;
 			List<Status> timeline = client.getTimeline(20);
 			for (Status status : timeline) {
-				Log.d(TAG, String.format("%s.[%s]: %s - by %s",  
-						status.getCreatedAt(), 
-						status.getId(),
-						status.getMessage(), 
-						status.getUser()));
+				values.clear();
+				values.put(StatusContract.Column.ID, status.getId());
+				values.put(StatusContract.Column.USER, status.getUser());
+				values.put(StatusContract.Column.MESSAGE, status.getMessage());
+				values.put(StatusContract.Column.CREATED_AT,
+						status.getCreatedAt().getTime());
+				
+				Uri uri = getContentResolver().insert(
+							StatusContract.CONTENT_URI, values);
+				if (uri != null) {
+					count++;
+					Log.d(TAG, String.format(Locale.US, "%s: %s",
+							status.getUser(), status.getMessage()));
+				}
+//				db.insertWithOnConflict(StatusContract.TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+				
+//				Log.d(TAG, String.format("%s.[%s]: %s - by %s",  
+//						status.getCreatedAt(), 
+//						status.getId(),
+//						status.getMessage(), 
+//						status.getUser()));
 			}
+			
+			Log.d(TAG, String.format(Locale.US, "Insert %d records", count));
 		} catch (YambaClientException e) {
 			e.printStackTrace();
 			Log.e(TAG, e.toString());

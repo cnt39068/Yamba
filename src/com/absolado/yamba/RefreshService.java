@@ -59,8 +59,8 @@ public class RefreshService extends IntentService {
 				Log.d(TAG, String.format("%s.[%s]: %s - by %s",  
 						status.getCreatedAt(), 
 						status.getId(),
-						status.getUser(), 
-						status.getMessage()));
+						status.getMessage(), 
+						status.getUser()));
 			}
 		} catch (YambaClientException e) {
 			e.printStackTrace();

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	
@@ -38,6 +39,13 @@ public class MainActivity extends Activity {
 		case R.id.action_refresh:
 			Log.d(TAG, "Start refresh service");
 			startService(new Intent(this, RefreshService.class));
+			return true;
+		case R.id.action_purge:
+			Log.d(TAG, "Delete status");
+			int rows = getContentResolver().delete(
+					StatusContract.CONTENT_URI, null, null);
+			Toast.makeText(this, "Deleted "+rows+" rows", 
+					Toast.LENGTH_LONG).show();
 			return true;
 		default:
 			Log.i(TAG, "Other button clicked");

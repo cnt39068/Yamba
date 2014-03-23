@@ -77,8 +77,8 @@ public class RefreshService extends IntentService {
 							StatusContract.CONTENT_URI, values);
 				if (uri != null) {
 					count++;
-					Log.d(TAG, String.format(Locale.US, "%s: %s",
-							status.getUser(), status.getMessage()));
+//					Log.d(TAG, String.format(Locale.US, "%s: %s",
+//							status.getUser(), status.getMessage()));
 				}
 //				db.insertWithOnConflict(StatusContract.TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
 				

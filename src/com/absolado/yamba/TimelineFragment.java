@@ -8,8 +8,10 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 public class TimelineFragment extends ListFragment implements
 	LoaderCallbacks<Cursor>{
@@ -21,15 +23,32 @@ public class TimelineFragment extends ListFragment implements
 	private static final int LOADER_ID = 32;
 	private SimpleCursorAdapter mAdapter; 
 
-	private static final ViewBinder VIEW_BINDER = new ViewBinder() {
-		
+//	private static final ViewBinder VIEW_BINDER = new ViewBinder() {
+//		
+//		@Override
+//		public boolean setViewValue(View view, Cursor cursor, 
+//									int columnIndex) {
+//			// TODO Auto-generated method stub
+//			return false;
+//		}
+//	};
+	
+	class TimelineViewBinder implements ViewBinder {
 		@Override
-		public boolean setViewValue(View view, Cursor cursor, 
+		public boolean setViewValue(View view, Cursor cursor,
 									int columnIndex) {
-			// TODO Auto-generated method stub
-			return false;
+			if (view.getId() != R.id.list_item_text_created_at)
+				return false;
+			
+			long timestamp = cursor.getLong(columnIndex);
+			CharSequence relativeTime = DateUtils
+					.getRelativeTimeSpanString(timestamp);
+			
+			((TextView) view).setText(relativeTime);
+			
+			return true;
 		}
-	};
+	}
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -37,7 +56,7 @@ public class TimelineFragment extends ListFragment implements
 		
 		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.list_item, 
 				null, FROM, TO, 0);
-		mAdapter.setViewBinder(VIEW_BINDER);
+		mAdapter.setViewBinder(new TimelineViewBinder());
 		setListAdapter(mAdapter);
 		getLoaderManager().initLoader(LOADER_ID, null, this);
 	}

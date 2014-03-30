@@ -3,6 +3,7 @@ package com.absolado.yamba;
 import android.app.ListFragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -11,7 +12,9 @@ import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TimelineFragment extends ListFragment implements
 	LoaderCallbacks<Cursor>{
@@ -23,17 +26,8 @@ public class TimelineFragment extends ListFragment implements
 	private static final int LOADER_ID = 32;
 	private SimpleCursorAdapter mAdapter; 
 
-//	private static final ViewBinder VIEW_BINDER = new ViewBinder() {
-//		
-//		@Override
-//		public boolean setViewValue(View view, Cursor cursor, 
-//									int columnIndex) {
-//			// TODO Auto-generated method stub
-//			return false;
-//		}
-//	};
-	
-	class TimelineViewBinder implements ViewBinder {
+	private static final ViewBinder VIEW_BINDER = new ViewBinder() {
+		
 		@Override
 		public boolean setViewValue(View view, Cursor cursor,
 									int columnIndex) {
@@ -48,7 +42,8 @@ public class TimelineFragment extends ListFragment implements
 			
 			return true;
 		}
-	}
+	};
+	
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -56,9 +51,10 @@ public class TimelineFragment extends ListFragment implements
 		
 		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.list_item, 
 				null, FROM, TO, 0);
-		mAdapter.setViewBinder(new TimelineViewBinder());
+		mAdapter.setViewBinder(VIEW_BINDER);
 		setListAdapter(mAdapter);
 		getLoaderManager().initLoader(LOADER_ID, null, this);
+		
 	}
 
 	@Override
@@ -74,6 +70,15 @@ public class TimelineFragment extends ListFragment implements
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		DetailsFragment fragment = (DetailsFragment) getFragmentManager()
+				.findFragmentById(R.id.fragment_details);
+		
+		if (fragment !=null && fragment.isVisible() && cursor.getCount()
+				== 0) {
+			fragment.updateView(-1);
+			Toast.makeText(getActivity(), "No data", Toast.LENGTH_LONG).show();
+		}
+		
 		Log.d(TAG, "onLoadFinished with cursor: " + cursor.getCount());
 		mAdapter.swapCursor(cursor);	
 	}
@@ -82,6 +87,22 @@ public class TimelineFragment extends ListFragment implements
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.d(TAG, "onLoaderReset");
 		mAdapter.swapCursor(null);
+	}
+
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		Log.d(TAG, String.format("onListItemClick with position = %d, id = %d", position, id));
+
+		DetailsFragment fragment = (DetailsFragment)getFragmentManager()
+				.findFragmentById(R.id.fragment_details);
+		
+		// is details fragment visible
+		if (fragment != null && fragment.isVisible()) {
+			fragment.updateView(id);
+		} else {
+			Intent intent = new Intent(getActivity(), DetailsActivity.class);
+			startActivity(intent.putExtra(StatusContract.Column.ID, id));
+		}
 	}
 
 }

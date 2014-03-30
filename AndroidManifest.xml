@@ -27,8 +27,10 @@
         
         <activity
             android:name="com.absolado.yamba.SettingsActivity"
-            android:label="@string/action_settings">
-         </activity>
+            android:label="@string/action_settings" />
+         
+        <activity
+            android:name="com.absolado.yamba.DetailsActivity" />
          
         <activity
             android:name="com.absolado.yamba.MainActivity"
